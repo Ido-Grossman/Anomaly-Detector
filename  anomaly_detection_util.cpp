@@ -33,13 +33,32 @@ float var(float* x, int size) {
         mio += x[i];
         z += x[i] * x[i];
     }
-    mio /= (float)size;
+    mio /= size;
     mio *= mio;
-    z /= (float)size;
+    z /= size;
     z -= mio;
     return z;
 }
 
+Line linear_reg(Point** points, int size) {
+    float x[size];
+    float y[size];
+    for (int i = 0; i < size; ++i) {
+        x[i] = points[i]->x;
+        y[i] = points[i]->y;
+    }
+    float a = cov(x,y, size) / var(x, size);
+    float xAve = 0;
+    float yAve = 0;
+    for (int i = 0; i < size; ++i) {
+        xAve += x[i];
+        yAve += y[i];
+    }
+    xAve /= size;
+    yAve /= size;
+    float b = yAve - (a * xAve);
+    return Line(a, b);
+}
 // returns the Pearson correlation coefficient of X and Y
 float pearson(float* x, float* y, int size){
     return cov(x, y, size) / (sqrt(var(x, size) * sqrt(var(y, size))));
