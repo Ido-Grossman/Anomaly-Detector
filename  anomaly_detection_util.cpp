@@ -72,7 +72,7 @@ float pearson(float* x, float* y, int size){
     if (x == nullptr || y == nullptr || size == 0) {
         return ERROR;
     }
-    return cov(x, y, size) / (sqrt(var(x, size) * sqrt(var(y, size))));
+    return cov(x, y, size) / (sqrt(var(x, size))) * sqrt(var(y, size));
 }
 
 // returns the deviation between point p and the line
