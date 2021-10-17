@@ -73,6 +73,10 @@ float pearson(float* x, float* y, int size){
     }
     return cov(x, y, size) / (sqrt(var(x, size) * sqrt(var(y, size))));
 }
+// returns the deviation between point p and the line equation of the points
+float dev(Point p,Point** points, int size){
+    return dev(p, linear_reg(points, size));
+}
 
 // returns the deviation between point p and the line
 float dev(Point p,Line l) {
