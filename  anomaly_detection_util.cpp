@@ -1,7 +1,7 @@
 
 
 #include " anomaly_detection_util.h"
-#include <cmath>
+#include <math.h>
 
 // returns the covariance of X and Y
 float cov(float* x, float* y, int size){
@@ -40,6 +40,7 @@ float var(float* x, int size) {
     return z;
 }
 
+// performs a linear regression and return s the line equation
 Line linear_reg(Point** points, int size) {
     float x[size];
     float y[size];
@@ -59,7 +60,13 @@ Line linear_reg(Point** points, int size) {
     float b = yAve - (a * xAve);
     return Line(a, b);
 }
+
 // returns the Pearson correlation coefficient of X and Y
 float pearson(float* x, float* y, int size){
     return cov(x, y, size) / (sqrt(var(x, size) * sqrt(var(y, size))));
+}
+
+// returns the deviation between point p and the line
+float dev(Point p,Line l) {
+    return abs(l.f(p.x) - p.y);
 }
