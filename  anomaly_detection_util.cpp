@@ -2,6 +2,7 @@
 
 #include " anomaly_detection_util.h"
 
+
 float cov(float* x, float* y, int size){
     float tempArr[size];
     float xAverage = 0, yAverage = 0, xyAverage = 0;
@@ -21,6 +22,7 @@ float cov(float* x, float* y, int size){
     return xyAverage - xAverage * yAverage;
     
 }
+
 // returns the variance of X and Y
 float var(float* x, int size) {
     float z = 0;
@@ -36,3 +38,4 @@ float var(float* x, int size) {
     z -= mio;
     return z;
 }
+
