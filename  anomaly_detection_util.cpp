@@ -5,6 +5,9 @@
 
 // returns the covariance of X and Y
 float cov(float* x, float* y, int size){
+    if (x == nullptr || y == nullptr || size == 0) {
+        return 0;
+    }
     float tempArr[size];
     float xAverage = 0, yAverage = 0, xyAverage = 0;
     for(int i = 0; i < size; i++){
@@ -14,7 +17,6 @@ float cov(float* x, float* y, int size){
         xAverage += x[i];
         yAverage += y[i];
         xyAverage += tempArr[i];
-
     }
     xAverage /= size;
     yAverage /= size;
@@ -26,6 +28,9 @@ float cov(float* x, float* y, int size){
 
 // returns the variance of X and Y
 float var(float* x, int size) {
+    if (x == nullptr || size == 0) {
+        return 0;
+    }
     float z = 0;
     // the mio of var(x)
     float mio = 0;
@@ -42,6 +47,9 @@ float var(float* x, int size) {
 
 // performs a linear regression and return s the line equation
 Line linear_reg(Point** points, int size) {
+    if (points == nullptr || size == 0) {
+        return Line(0, 0);
+    }
     float x[size], y[size], xAve = 0, yAve = 0;
     for (int i = 0; i < size; ++i) {
         // transfers the points x's into an array.
@@ -60,6 +68,9 @@ Line linear_reg(Point** points, int size) {
 
 // returns the Pearson correlation coefficient of X and Y
 float pearson(float* x, float* y, int size){
+    if (x == nullptr || y == nullptr || size == 0) {
+        return 0;
+    }
     return cov(x, y, size) / (sqrt(var(x, size) * sqrt(var(y, size))));
 }
 
