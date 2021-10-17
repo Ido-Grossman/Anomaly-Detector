@@ -40,7 +40,7 @@ float var(float* x, int size) {
     return z;
 }
 
-// returns the Pearson correlation coefficient of X and Y.
+// returns the Pearson correlation coefficient of X and Y
 float pearson(float* x, float* y, int size){
     return cov(x, y, size) / (sqrt(var(x, size) * sqrt(var(y, size))));
 }
