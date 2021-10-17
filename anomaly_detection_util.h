@@ -4,7 +4,7 @@
 
 #ifndef IDOSANTI_ANOMALY_DETECTION_UTIL_H
 #define IDOSANTI_ANOMALY_DETECTION_UTIL_H
-#define ERROR -1;
+//#define ERROR -1;
 // returns the variance of X and Y
 float var(float* x, int size);
 

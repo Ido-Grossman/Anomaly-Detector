@@ -1,8 +1,9 @@
 
 
-#include " anomaly_detection_util.h"
-#include <math.h>
+#include "anomaly_detection_util.h"
+#include <cmath>
 
+#define ERROR -1;
 
 // returns the covariance of X and Y
 float cov(float* x, float* y, int size){
@@ -72,12 +73,12 @@ float pearson(float* x, float* y, int size){
     if (x == nullptr || y == nullptr || size == 0) {
         return ERROR;
     }
-    return cov(x, y, size) / (sqrt(var(x, size) * sqrt(var(y, size))));
+    return cov(x, y, size) / (std::sqrt(var(x, size)) * std::sqrt(var(y, size)));
 }
 
 // returns the deviation between point p and the line
 float dev(Point p,Line l) {
-    return abs(l.f(p.x) - p.y);
+    return std::abs(l.f(p.x) - p.y);
 }
 
 // returns the deviation between point p and the line equation of the points
