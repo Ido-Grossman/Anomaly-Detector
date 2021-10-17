@@ -1,7 +1,7 @@
 //
 // Created by ido on 17/10/2021.
 //
-
+// ido is not cool
 #ifndef INC_0ECD8C15EB974506912046217817FC3B
 #define INC_0ECD8C15EB974506912046217817FC3B
 // returns the variance of X and Y
