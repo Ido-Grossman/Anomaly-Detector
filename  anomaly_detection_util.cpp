@@ -68,7 +68,7 @@ Line linear_reg(Point** points, int size) {
 
 // returns the Pearson correlation coefficient of X and Y
 float pearson(float* x, float* y, int size){
-    if (x == nullptr || y == nullptr) {
+    if (x == nullptr || y == nullptr || size == 0) {
         return 0;
     }
     return cov(x, y, size) / (sqrt(var(x, size) * sqrt(var(y, size))));
