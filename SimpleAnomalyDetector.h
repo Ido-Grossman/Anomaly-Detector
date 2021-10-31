@@ -1,7 +1,3 @@
-//
-// Created by ido on 31/10/2021.
-//
-
 #ifndef IDOSANTI_SIMPLEANOMALYDETECTOR_H
 #define IDOSANTI_SIMPLEANOMALYDETECTOR_H
 
