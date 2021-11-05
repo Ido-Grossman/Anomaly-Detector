@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+
 #ifndef TIMESERIES_H_
 #define TIMESERIES_H_
 
