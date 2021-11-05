@@ -2,33 +2,13 @@
 #ifndef TIMESERIES_H_
 #define TIMESERIES_H_
 
-using namespace std;
-
-class TimeSeries{
-
-public:
-
-	TimeSeries(const char* CSVfileName){
-	}
-
-};
-
-
-
-#endif /* TIMESERIES_H_ */
-=======
-//
-// Created by santiago on 05/11/2021.
-//
-
-#ifndef IDOSANTI_TIMESERIES_H
-#define IDOSANTI_TIMESERIES_H
 #include "AnomalyDetector.h"
 class TimeSeries{
     std::map<std::string, std::vector<float>> table;
-
 public:
-    TimeSeries()= default;
+    explicit
+	TimeSeries(const char* CSVfileName){}
+
     void readFromFile(std::ifstream file) {
         std::vector<std::string> keys;
         bool isFirstLine = true;
@@ -53,9 +33,8 @@ public:
         }
     }
 
-    std::vector<float> GetFeature(std::string& featureName) const {
-        return table.extract(featureName);
+    std::vector<float> GetFeature(const std::string& featureName) const {
+        return table.find(featureName) -> second;
     }
 };
-#endif //IDOSANTI_TIMESERIES_H
->>>>>>> origin/Santi
+#endif
