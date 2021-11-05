@@ -3,5 +3,4 @@ project(IdoSanti)
 
 set(CMAKE_CXX_STANDARD 11)
 
-add_executable(untitled "anomaly_detection_util.cpp" "anomaly_detection_util.h" "AnomalyDetector.h" "SimpleAnomalyDetector.h"
-        "SimpleAnomalyDetector.cpp" "MainTrain.cpp" "timeseries.h" "timeseries.cpp")
+add_executable(untitled "anomaly_detection_util.cpp" "anomaly_detection_util.h")
