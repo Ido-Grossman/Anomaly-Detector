@@ -7,7 +7,7 @@ class TimeSeries{
     std::map<std::string, std::vector<float>> table;
 public:
     explicit
-	TimeSeries(const char* CSVfileName){}
+    TimeSeries(const char* CSVfileName){}
 
     void readFromFile(std::ifstream file) {
         std::vector<std::string> keys;
