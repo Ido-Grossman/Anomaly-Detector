@@ -24,7 +24,6 @@ float cov(float* x, float* y, int size){
     xyAverage /= size;
     // E(xy) - E(x)E(y)
     return xyAverage - xAverage * yAverage;
-    
 }
 
 // returns the variance of X and Y
