@@ -30,7 +30,7 @@ std::vector<float> TimeSeries::getFeatureVector(const std::string &featureName) 
     return table.find(featureName) -> second;
 }
 
-std::vector<std::string> TimeSeries::getFeatures() {
+std::vector<std::string> TimeSeries::getFeatures() const {
     std::vector<std::string> keys;
     for (auto it = this->table.begin(); it != this->table.end(); ++it) {
         keys.push_back(it->first);
