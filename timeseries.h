@@ -9,32 +9,10 @@ public:
     explicit
     TimeSeries(const char* CSVfileName){}
 
-    void readFromFile(std::ifstream file) {
-        std::vector<std::string> keys;
-        bool isFirstLine = true;
+    void readFromFile(std::ifstream file);
 
-        while(file.good()){
-            std::string line;
-            getline(file, line, '\n');
-            std::istringstream newLine(line);
-            std::string word;
-            int i = 0;
-            while(getline(newLine, word, ',')){
-                if (isFirstLine) {
-                    std::vector<float> vec;
-                    keys.push_back(word);
-                    table.insert(std::make_pair(word, vec));
-                } else {
-                    table[keys[i]].push_back(std::stof(word));
-                }
-                i++;
-            }
-            isFirstLine = false;
-        }
-    }
+    std::vector<std::string> GetFeatures() const;
 
-    std::vector<float> GetFeature(const std::string& featureName) const {
-        return table.find(featureName) -> second;
-    }
+    std::std::vector<float> GetFeatureVector(const std::string& featureName);
 };
 #endif
