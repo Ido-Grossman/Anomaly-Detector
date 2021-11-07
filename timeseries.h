@@ -4,11 +4,16 @@
 
 #include "AnomalyDetector.h"
 class TimeSeries{
+    // table we create from the csv file
     std::map<std::string, std::vector<float>> table;
+    // the keys vector of the map
+    std::vector<std::string> keysVector;
 public:
     explicit
     TimeSeries(const char* CSVfileName);
-    std::vector<std::string> GetFeatures() const;
-    std::vector<float> GetFeatureVector(const std::string& featureName) const;
+    // this function returns the keys vector
+    const std::vector<std::string> GetFeatures() const;
+    // this function given a key as an argument, returns the vector of the feature
+    const std::vector<float> GetFeatureVector(const std::string& featureName) const;
 };
 #endif
