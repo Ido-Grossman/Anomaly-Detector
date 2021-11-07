@@ -14,6 +14,6 @@ public:
     // this function returns the keys vector
     const std::vector<std::string> GetFeatures() const;
     // this function given a key as an argument, returns the vector of the feature
-    const std::vector<float> GetFeatureVector(const std::string& featureName) const;
+    std::vector<float> GetFeatureVector(const std::string& featureName) const;
 };
 #endif
