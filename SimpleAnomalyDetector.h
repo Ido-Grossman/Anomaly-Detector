@@ -7,7 +7,7 @@
 #include "AnomalyDetector.h"
 #include <vector>
 #include <algorithm>
-#include <cstring>
+#include <string>
 #include <cmath>
 
 struct correlatedFeatures{
