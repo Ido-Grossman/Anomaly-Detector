@@ -1,9 +1,22 @@
 
 #include "SimpleAnomalyDetector.h"
 
-SimpleAnomalyDetector::SimpleAnomalyDetector() = default;
+SimpleAnomalyDetector::SimpleAnomalyDetector() {
+    threshHold = 0.9;
+}
 
 SimpleAnomalyDetector::~SimpleAnomalyDetector() = default;
+
+float calcTreshold(std::vector<Point*> &points, int size, Line linearReg) {
+    float max = 0;
+    for (int i = 0; i < size; i++) {
+        float distance = std::abs(points[i]->y - linearReg.f(points[i]->x));
+        if (distance > max) {
+            max = distance;
+        }
+    }
+    return max;
+}
 
 /*
  * learns the normal linear reg for each of the correlating features.
@@ -42,6 +55,7 @@ void SimpleAnomalyDetector::learnNormal(const TimeSeries& ts){
                 points.insert(points.cend(), new Point(feature1Vec[j], feature2Vec[j]));
             }
             coFeatures.lin_reg = linear_reg(&points[0], size);
+            coFeatures.threshold = calcTreshold(points, points.size(), coFeatures.lin_reg);
         }
     }
 }
