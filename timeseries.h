@@ -8,8 +8,7 @@ class TimeSeries{
 public:
     explicit
 	TimeSeries(const char* CSVfileName);
-    void readFromFile(std::ifstream file);
     std::vector<float> getFeatureVector(const std::string& featureName) const;
-    std::vector<std::string> getFeatures();
+    std::vector<std::string> getFeatures () const;
 };
 #endif
