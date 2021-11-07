@@ -20,5 +20,8 @@ public:
 
     // this function given a key as an argument, returns the vector of the feature
     std::vector<float> GetFeatureVector(const std::string& featureName) const;
+
+    // destructor
+    ~TimeSeries();
 };
 #endif
