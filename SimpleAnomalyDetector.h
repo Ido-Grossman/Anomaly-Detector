@@ -7,11 +7,7 @@
 #include "AnomalyDetector.h"
 #include <vector>
 #include <algorithm>
-<<<<<<<<< Temporary merge branch 1
 #include <cstring>
-=========
-#include <string>
->>>>>>>>> Temporary merge branch 2
 #include <cmath>
 
 struct correlatedFeatures{
