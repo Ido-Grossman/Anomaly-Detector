@@ -2,12 +2,12 @@
 #include "SimpleAnomalyDetector.h"
 
 SimpleAnomalyDetector::SimpleAnomalyDetector() {
-    threshHold = 0.9;
+    threshold = 0.9;
 }
 
 SimpleAnomalyDetector::~SimpleAnomalyDetector() = default;
 
-float calcTreshold(std::vector<Point*> &points, int size, Line linearReg) {
+float SimpleAnomalyDetector::calcThreshold(std::vector<Point*> &points, int size, Line linearReg) {
     float max = 0;
     for (int i = 0; i < size; i++) {
         float distance = std::abs(points[i]->y - linearReg.f(points[i]->x));
@@ -43,7 +43,7 @@ void SimpleAnomalyDetector::learnNormal(const TimeSeries& ts){
             }
         }
         // If one of the features had correlation with the current feature it creates them as correlated features.
-        if (c != -1) {
+        if (c != -1 && (m * 1.1) > threshold) {
             correlatedFeatures coFeatures;
             coFeatures.feature1 = features[i];
             coFeatures.feature2 = features[c];
@@ -55,7 +55,7 @@ void SimpleAnomalyDetector::learnNormal(const TimeSeries& ts){
                 points.insert(points.cend(), new Point(feature1Vec[j], feature2Vec[j]));
             }
             coFeatures.lin_reg = linear_reg(&points[0], size);
-            coFeatures.threshold = calcTreshold(points, points.size(), coFeatures.lin_reg);
+            coFeatures.threshold = calcThreshold(points, points.size(), coFeatures.lin_reg);
         }
     }
 }
