@@ -1,9 +1,8 @@
 #include "timeseries.h"
 
 
-TimeSeries::TimeSeries(const char *CSVfileName) {};
-
-void TimeSeries::readFromFile(std::ifstream file) {
+TimeSeries::TimeSeries(const char *CSVfileName) {
+    std::ifstream file(CSVfileName);
     std::vector<std::string> keys;
     bool isFirstLine = true;
 
@@ -25,6 +24,7 @@ void TimeSeries::readFromFile(std::ifstream file) {
         }
         isFirstLine = false;
     }
+    file.close();
 }
 std::vector<float> TimeSeries::getFeatureVector(const std::string &featureName) const {
     return table.find(featureName) -> second;
