@@ -60,19 +60,39 @@ void SimpleAnomalyDetector::learnNormal(const TimeSeries& ts){
     }
 }
 
+/*
+ * Detects all of the anomalies in the timeseries
+ */
 std::vector<AnomalyReport> SimpleAnomalyDetector::detect(const TimeSeries& ts){
 	std::vector<std::string> features = ts.GetFeatures();
-    std::map<std::string, std::vector<Point>> points;
-    for (int i = 0; i < cf.size(); i++) {
+    std::map<std::string, std::vector<Point>> pointsMap;
+    unsigned long pointSize;
+    unsigned long size = cf.size();
+    for (int i = 0; i < size; i++) {
         std::vector<float> feature1 = ts.GetFeatureVector(cf[i].feature1);
         std::vector<float> feature2 = ts.GetFeatureVector(cf[i].feature2);
+        pointSize = feature1.size();
         std::vector<Point> correlated;
         for (int j = 0; j < feature1.size(); j++) {
             Point p(feature1[j], feature2[j]);
             correlated.push_back(p);
         }
-        points.insert(std::make_pair(cf[i].feature1, correlated));
+        pointsMap.insert(std::make_pair(cf[i].feature1, correlated));
     }
-
+    std::vector<AnomalyReport> reports;
+    for (int i = 0; i < size; i++) {
+        std::string feature1 = cf[i].feature1;
+        std::string feature2 = cf[i].feature2;
+        std::vector<Point> points = pointsMap.find(feature1) -> second;
+        Line lineReg = cf[i].lin_reg;
+        int time = 1;
+        for (int j = 0; j < pointSize; j++, time++) {
+            float distanceFromLine = std::abs(points[j].y - lineReg.f(points[j].x));
+            if (distanceFromLine > cf[i].threshold) {
+                AnomalyReport anomalyReport(feature1 += "-" + feature2, time);
+                reports.push_back(anomalyReport);
+            }
+        }
+    }
+    return reports;
 }
-
