@@ -92,10 +92,6 @@ std::vector<AnomalyReport> SimpleAnomalyDetector::detect(const TimeSeries& ts){
             if (distanceFromLine > threshold) {
                 AnomalyReport anomalyReport(description, time);
                 reports.push_back(anomalyReport);
-                if (description != "A-C") {
-                    std::cout<<"why"<<std::endl;
-                    int x = 5;
-                }
             }
         }
     }

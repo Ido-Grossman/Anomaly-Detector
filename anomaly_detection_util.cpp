@@ -19,9 +19,9 @@ float cov(float* x, float* y, int size){
         yAverage += y[i];
         xyAverage += tempArr[i];
     }
-    xAverage /= size;
-    yAverage /= size;
-    xyAverage /= size;
+    xAverage /= (float)size;
+    yAverage /= (float) size;
+    xyAverage /= (float) size;
     // E(xy) - E(x)E(y)
     return xyAverage - xAverage * yAverage;
 }
@@ -38,9 +38,9 @@ float var(float* x, int size) {
         mio += x[i];
         z += x[i] * x[i];
     }
-    mio /= size;
+    mio /= (float) size;
     mio *= mio;
-    z /= size;
+    z /= (float) size;
     z -= mio;
     return z;
 }
@@ -48,7 +48,7 @@ float var(float* x, int size) {
 // performs a linear regression and return s the line equation
 Line linear_reg(Point** points, int size) {
     if (points == nullptr || size == 0) {
-        return Line(0, 0);
+        return {0, 0};
     }
     float x[size], y[size], xAve = 0, yAve = 0;
     for (int i = 0; i < size; ++i) {
@@ -60,10 +60,10 @@ Line linear_reg(Point** points, int size) {
         yAve += points[i]->y;
     }
     float a = cov(x,y, size) / var(x, size);
-    xAve /= size;
-    yAve /= size;
+    xAve /= (float) size;
+    yAve /= (float) size;
     float b = yAve - (a * xAve);
-    return Line(a, b);
+    return {a, b};
 }
 
 // returns the Pearson correlation coefficient of X and Y
