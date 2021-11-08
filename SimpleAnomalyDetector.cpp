@@ -2,7 +2,7 @@
 #include "SimpleAnomalyDetector.h"
 
 SimpleAnomalyDetector::SimpleAnomalyDetector() {
-    threshold = 0.9;
+    _threshold = 0.9;
 }
 
 SimpleAnomalyDetector::~SimpleAnomalyDetector() = default;
@@ -43,7 +43,7 @@ void SimpleAnomalyDetector::learnNormal(const TimeSeries& ts){
             }
         }
         // If one of the features had correlation with the current feature it creates them as correlated features.
-        if (c != -1 && (m * 1.1) > threshold) {
+        if (c != -1 && m > _threshold) {
             correlatedFeatures coFeatures;
             coFeatures.feature1 = features[i];
             coFeatures.feature2 = features[c];
@@ -56,7 +56,7 @@ void SimpleAnomalyDetector::learnNormal(const TimeSeries& ts){
                 points.push_back(new Point(feature1Vec[j], feature2Vec[j]));
             }
             coFeatures.lin_reg = linear_reg(&points[0], size);
-            coFeatures.threshold = calcThreshold(points, points.size(), coFeatures.lin_reg);
+            coFeatures.threshold = calcThreshold(points, points.size(), coFeatures.lin_reg) * 1.1f;
             cf.push_back(coFeatures);
         }
     }
@@ -68,39 +68,26 @@ void SimpleAnomalyDetector::learnNormal(const TimeSeries& ts){
 std::vector<AnomalyReport> SimpleAnomalyDetector::detect(const TimeSeries& ts){
     // Opening a map of the features and gets the size of cf and the lines size.
 	std::vector<std::string> features = ts.GetFeatures();
-    std::map<std::string, std::vector<Point>> pointsMap;
     unsigned long pointSize;
     unsigned long size = cf.size();
-    for (int i = 0; i < size; i++) {
-        // gets the point of each line as feature1 being x and feature2 being y and assigns it to feature1 in the map.
-        std::vector<float> feature1 = ts.GetFeatureVector(cf[i].feature1);
-        std::vector<float> feature2 = ts.GetFeatureVector(cf[i].feature2);
-        pointSize = feature1.size();
-        std::vector<Point> correlated;
-        // Goes over each line and registers it as point
-        for (int j = 0; j < feature1.size(); j++) {
-            Point p(feature1[j], feature2[j]);
-            correlated.push_back(p);
-        }
-        pointsMap.insert(std::make_pair(cf[i].feature1, correlated));
-    }
     // Creates a vector of anomaly reports.
     std::vector<AnomalyReport> reports;
     for (int i = 0; i < size; i++) {
         // For debugging creates a parameter of the correlated feature and the features name (and Comfortability)
-        correlatedFeatures feature = cf[i];
-        std::string feature1 = feature.feature1;
-        std::string feature2 = feature.feature2;
-        std::vector<Point> points = pointsMap.find(feature1) -> second;
-        Line lineReg = feature.lin_reg;
+        std::string feature1Namer = cf[i].feature1;
+        std::string feature2Name = cf[i].feature2;
+        std::vector<float> feature1 = ts.GetFeatureVector(cf[i].feature1);
+        std::vector<float> feature2 = ts.GetFeatureVector(cf[i].feature2);
+        Line lineReg = cf[i].lin_reg;
+        float threshold = cf[i].threshold;
         int time = 1;
-        std::string description = feature1 + "-";
-        description += feature2;
+        std::string description = feature1Namer + "-";
+        description += feature2Name;
         // Goes over each point in the points vector of the correlated features and checks if it's above or under
-        // the threshold, if it's above it creates it as anomaly and pushes it to the anomaly vector.
-        for (int j = 0; j < pointSize; j++, time++) {
-            float distanceFromLine = std::abs(points[j].y - lineReg.f(points[j].x));
-            if (distanceFromLine > feature.threshold) {
+        // the _threshold, if it's above it creates it as anomaly and pushes it to the anomaly vector.
+        for (int j = 0; j < feature2.size(); j++, time++) {
+            float distanceFromLine = std::abs(feature2[j] - lineReg.f(feature1[j]));
+            if (distanceFromLine > threshold) {
                 AnomalyReport anomalyReport(description, time);
                 reports.push_back(anomalyReport);
             }
