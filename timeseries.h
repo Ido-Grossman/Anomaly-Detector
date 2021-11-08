@@ -16,9 +16,9 @@ public:
     TimeSeries(const char* CSVfileName);
 
     // this function returns the keys vector
-    std::vector<std::string> GetFeatures() const;
+    const std::vector<std::string>& GetFeatures() const;
 
     // this function given a key as an argument, returns the vector of the feature
-    std::vector<float> GetFeatureVector(const std::string& featureName) const;
+    const std::vector<float>& GetFeatureVector(const std::string& featureName) const;
 };
 #endif

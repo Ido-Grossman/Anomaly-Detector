@@ -35,10 +35,10 @@ TimeSeries::TimeSeries(const char *CSVfileName) {
     // closing the file
     file.close();
 }
-std::vector<float> TimeSeries::GetFeatureVector(const std::string &featureName) const {
+const std::vector<float>& TimeSeries::GetFeatureVector(const std::string &featureName) const {
     return table.find(featureName) -> second;
 }
 
-std::vector<std::string> TimeSeries::GetFeatures() const {
+const std::vector<std::string>& TimeSeries::GetFeatures() const {
     return this->keysVector;
 }
