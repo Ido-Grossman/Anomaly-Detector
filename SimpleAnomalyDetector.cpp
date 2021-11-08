@@ -57,7 +57,7 @@ void SimpleAnomalyDetector::learnNormal(const TimeSeries& ts){
             }
             coFeatures.lin_reg = linear_reg(&points[0], size);
             coFeatures.threshold = calcThreshold(points, points.size(), coFeatures.lin_reg);
-            coFeatures.threshold *= 1.1;
+            coFeatures.threshold *= 1.2;
             cf.push_back(coFeatures);
         }
     }
