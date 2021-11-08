@@ -2,87 +2,12 @@
 #include "SimpleAnomalyDetector.h"
 
 SimpleAnomalyDetector::SimpleAnomalyDetector() {
-	_threshold = 0.9;
-
+    _threshold = 0.9;
 }
 
 SimpleAnomalyDetector::~SimpleAnomalyDetector() = default;
 
-
-void SimpleAnomalyDetector::learnNormal(const TimeSeries& ts) {
-    // Gets the vector of features and calculates the size of features and the column size of features
-    const std::vector<std::string>& features = ts.GetFeatures();
-    int featuresAmount = features.size();
-    int  collSize = ts.GetFeatureVector(features[0]).size();
-    // Creates a table to save the variables in it and saves the vectors in the table.
-    float table[featuresAmount][collSize];
-    for (int i = 0; i < featuresAmount; i++) {
-        std::vector<float> coll = ts.GetFeatureVector(features[i]);
-        for (int j = 0; j < collSize; j++) {
-            table[i][j] = coll[j];
-        }
-    }
-    // does the algorithm suggested by the exercise and creates correlated feature struct for each correlated features.
-    for (int i = 0; i < featuresAmount; i++) {
-        float m = 0;
-        int c = -1;
-        for (int j = i + 1; j < featuresAmount; j++) {
-            float p = std::abs(pearson(table[i], table[j], collSize));
-            if (p > m) {
-                m = p;
-                c = j;
-            }
-        }
-        // If the features are correlated it creates a variable for them.
-        if (c != -1 && m > _threshold) {
-            Point* points[collSize];
-            for (int j = 0; j < collSize; j++) {
-                points[j] = new Point(table[i][j], table[c][j]);
-            }
-            buildCf(features[i], features[c], points, collSize, m);
-        }
-    }
-}
-
-
-
-std::vector<AnomalyReport> SimpleAnomalyDetector::detect(const TimeSeries& ts){
-	std::vector<std::string> features = ts.GetFeatures();
-    int cfSize = cf.size();
-    int collSize = ts.GetFeatureVector(features[0]).size();
-    std::vector<AnomalyReport> reports;
-    for (int i = 0; i < cfSize; i++) {
-        std::vector<float> features1 = ts.GetFeatureVector(cf[i].feature1);
-        std::vector<float> features2 = ts.GetFeatureVector(cf[i].feature2);
-        int timeStep = 1;
-        for (int j = 0; j < collSize; j++, timeStep++) {
-            float x = std::abs(features2[j] - cf[i].lin_reg.f(features1[j]));
-            if (x > cf[i].threshold) {
-                AnomalyReport report(cf[i].feature1 + "-" + cf[i].feature2, timeStep);
-                reports.push_back(report);
-            }
-        }
-    }
-    return reports;
-}
-
-/*
- * Creates the correlated features based on the given parameters.
- */
-void SimpleAnomalyDetector::buildCf(std::string feature1, std::string feature2, Point** points, int &featureSize, float& m) {
-    correlatedFeatures coFeatures;
-    coFeatures.feature1 = feature1;
-    coFeatures.feature2 = feature2;
-    coFeatures.corrlation = m;
-    coFeatures.lin_reg = linear_reg(points, featureSize);
-    coFeatures.threshold = calcCfThreshold(points, featureSize, coFeatures.lin_reg) * 1.1;
-    cf.push_back(coFeatures);
-}
-
-/*
- * calculates what is the point that is the farthest from the line and what is her distance from the line.
- */
-float SimpleAnomalyDetector::calcCfThreshold(Point** points, int &size, Line &linearReg) const {
+float SimpleAnomalyDetector::calcThreshold(std::vector<Point*> &points, int size, Line linearReg) {
     float max = 0;
     for (int i = 0; i < size; i++) {
         float distance = std::abs(points[i]->y - linearReg.f(points[i]->x));
@@ -93,3 +18,82 @@ float SimpleAnomalyDetector::calcCfThreshold(Point** points, int &size, Line &li
     return max;
 }
 
+/*
+ * learns the normal linear reg for each of the correlating features.
+ */
+void SimpleAnomalyDetector::learnNormal(const TimeSeries& ts){
+    // Getting the features name from the timeseries and the size of the features.
+    std::vector<std::string> features = ts.GetFeatures();
+    int size = ts.GetFeatureVector(features[0]).size();
+    /*
+     * Goes over each and every one of the features and checks which features correlates the most with it,
+     * after it checks for the current feature which feature correlate the most it creates a new correlated features
+     * and updates the features and the linear reg of the features.
+     */
+    for (int i = 0; i < features.size(); i++) {
+        float m = 0;
+        int c = -1;
+        // goes over each of the features that wasn't visited yet and checks which one have the most correlation.
+        for (int j = i + 1; j < features.size(); j++) {
+            float p = std::abs(pearson(&ts.GetFeatureVector(features[i])[0], &ts.GetFeatureVector(features[j])[0]
+                    , size));
+            if (p > m) {
+                m = p;
+                c= j;
+            }
+        }
+        // If one of the features had correlation with the current feature it creates them as correlated features.
+        if (c != -1 && m > _threshold) {
+            correlatedFeatures coFeatures;
+            coFeatures.feature1 = features[i];
+            coFeatures.feature2 = features[c];
+            coFeatures.corrlation = m;
+            std::vector<float> feature1Vec = ts.GetFeatureVector(features[i]);
+            std::vector<float> feature2Vec = ts.GetFeatureVector(features[c]);
+            std::vector<Point*> points;
+            points.reserve(size);
+            for (int j = 0; j < size; j++) {
+                points.push_back(new Point(feature1Vec[j], feature2Vec[j]));
+            }
+            coFeatures.lin_reg = linear_reg(&points[0], size);
+            coFeatures.threshold = calcThreshold(points, points.size(), coFeatures.lin_reg);
+            coFeatures.threshold *= 1.1;
+            cf.push_back(coFeatures);
+        }
+    }
+}
+
+/*
+ * Detects all of the anomalies in the timeseries
+ */
+std::vector<AnomalyReport> SimpleAnomalyDetector::detect(const TimeSeries& ts){
+    // Opening a map of the features and gets the size of cf and the lines size.
+	std::vector<std::string> features = ts.GetFeatures();
+    unsigned long size = cf.size();
+    // Creates a vector of anomaly reports.
+    std::vector<AnomalyReport> reports;
+    for (int i = 0; i < size; i++) {
+        // For debugging creates a parameter of the correlated feature and the features name (and Comfortability)
+        std::string feature1Namer = cf[i].feature1;
+        std::string feature2Name = cf[i].feature2;
+        std::vector<float> feature1 = ts.GetFeatureVector(cf[i].feature1);
+        std::vector<float> feature2 = ts.GetFeatureVector(cf[i].feature2);
+        Line lineReg = cf[i].lin_reg;
+        float threshold = cf[i].threshold;
+        int time = 1;
+        std::string description = feature1Namer + "-";
+        description += feature2Name;
+        // Goes over each point in the points vector of the correlated features and checks if it's above or under
+        // the _threshold, if it's above it creates it as anomaly and pushes it to the anomaly vector.
+        for (int j = 0; j < feature2.size(); j++, time++) {
+            float y = feature2[j];
+            float x = feature1[j];
+            float distanceFromLine = std::abs(y - lineReg.f(x));
+            if (distanceFromLine > threshold) {
+                AnomalyReport anomalyReport(description, time);
+                reports.push_back(anomalyReport);
+            }
+        }
+    }
+    return reports;
+}
