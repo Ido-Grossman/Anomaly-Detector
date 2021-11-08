@@ -56,7 +56,8 @@ void SimpleAnomalyDetector::learnNormal(const TimeSeries& ts){
                 points.push_back(new Point(feature1Vec[j], feature2Vec[j]));
             }
             coFeatures.lin_reg = linear_reg(&points[0], size);
-            coFeatures.threshold = calcThreshold(points, points.size(), coFeatures.lin_reg) * 1.1f;
+            coFeatures.threshold = calcThreshold(points, points.size(), coFeatures.lin_reg);
+            coFeatures.threshold *= 1.1;
             cf.push_back(coFeatures);
         }
     }
@@ -68,7 +69,6 @@ void SimpleAnomalyDetector::learnNormal(const TimeSeries& ts){
 std::vector<AnomalyReport> SimpleAnomalyDetector::detect(const TimeSeries& ts){
     // Opening a map of the features and gets the size of cf and the lines size.
 	std::vector<std::string> features = ts.GetFeatures();
-    unsigned long pointSize;
     unsigned long size = cf.size();
     // Creates a vector of anomaly reports.
     std::vector<AnomalyReport> reports;
@@ -86,10 +86,16 @@ std::vector<AnomalyReport> SimpleAnomalyDetector::detect(const TimeSeries& ts){
         // Goes over each point in the points vector of the correlated features and checks if it's above or under
         // the _threshold, if it's above it creates it as anomaly and pushes it to the anomaly vector.
         for (int j = 0; j < feature2.size(); j++, time++) {
-            float distanceFromLine = std::abs(feature2[j] - lineReg.f(feature1[j]));
+            float y = feature2[j];
+            float x = feature1[j];
+            float distanceFromLine = std::abs(y - lineReg.f(x));
             if (distanceFromLine > threshold) {
                 AnomalyReport anomalyReport(description, time);
                 reports.push_back(anomalyReport);
+                if (description != "A-C") {
+                    std::cout<<"why"<<std::endl;
+                    int x = 5;
+                }
             }
         }
     }
