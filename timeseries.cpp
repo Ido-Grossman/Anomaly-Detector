@@ -43,3 +43,5 @@ std::vector<float> TimeSeries::GetFeatureVector(const std::string &featureName) 
 const std::vector<std::string>& TimeSeries::GetFeatures() const {
     return this->keysVector;
 }
+
+TimeSeries::~TimeSeries()=default;
