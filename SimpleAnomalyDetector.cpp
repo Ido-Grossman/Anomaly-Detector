@@ -1,4 +1,4 @@
-
+// ID: 324603422 (Santiago Szterenberg) && 208985424 (Ido Grossman)
 #include "SimpleAnomalyDetector.h"
 
 SimpleAnomalyDetector::SimpleAnomalyDetector() {
@@ -7,7 +7,7 @@ SimpleAnomalyDetector::SimpleAnomalyDetector() {
 
 SimpleAnomalyDetector::~SimpleAnomalyDetector() = default;
 
-float SimpleAnomalyDetector::calcThreshold(std::vector<Point*> &points, int size, Line linearReg) {
+float SimpleAnomalyDetector::calcCfThreshold(Point** points, int &size, Line &linearReg) const {
     float max = 0;
     for (int i = 0; i < size; i++) {
         float distance = std::abs(points[i]->y - linearReg.f(points[i]->x));
@@ -22,21 +22,22 @@ float SimpleAnomalyDetector::calcThreshold(std::vector<Point*> &points, int size
  * learns the normal linear reg for each of the correlating features.
  */
 void SimpleAnomalyDetector::learnNormal(const TimeSeries& ts){
-    // Getting the features name from the timeseries and the size of the features.
+    // Getting the features name from the timeseries and the collSize of the features.
     std::vector<std::string> features = ts.GetFeatures();
-    int size = ts.GetFeatureVector(features[0]).size();
+    int collSize = ts.GetFeatureVector(features[0]).size();
+    int size = features.size();
     /*
      * Goes over each and every one of the features and checks which features correlates the most with it,
      * after it checks for the current feature which feature correlate the most it creates a new correlated features
      * and updates the features and the linear reg of the features.
      */
-    for (int i = 0; i < features.size(); i++) {
+    for (int i = 0; i < size; i++) {
         float m = 0;
         int c = -1;
         // goes over each of the features that wasn't visited yet and checks which one have the most correlation.
-        for (int j = i + 1; j < features.size(); j++) {
+        for (int j = i + 1; j < size; j++) {
             float p = std::abs(pearson(&ts.GetFeatureVector(features[i])[0], &ts.GetFeatureVector(features[j])[0]
-                    , size));
+                    , collSize));
             if (p > m) {
                 m = p;
                 c= j;
@@ -51,12 +52,12 @@ void SimpleAnomalyDetector::learnNormal(const TimeSeries& ts){
             std::vector<float> feature1Vec = ts.GetFeatureVector(features[i]);
             std::vector<float> feature2Vec = ts.GetFeatureVector(features[c]);
             std::vector<Point*> points;
-            points.reserve(size);
-            for (int j = 0; j < size; j++) {
+            points.reserve(collSize);
+            for (int j = 0; j < collSize; j++) {
                 points.push_back(new Point(feature1Vec[j], feature2Vec[j]));
             }
-            coFeatures.lin_reg = linear_reg(&points[0], size);
-            coFeatures.threshold = calcThreshold(points, points.size(), coFeatures.lin_reg);
+            coFeatures.lin_reg = linear_reg(&points[0], collSize);
+            coFeatures.threshold = calcCfThreshold(&points[0], collSize, coFeatures.lin_reg);
             coFeatures.threshold *= 1.2;
             cf.push_back(coFeatures);
         }
