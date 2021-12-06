@@ -5,5 +5,12 @@ class Circle {
 private:
     Point center;
     double radius;
+public:
+    Point GetCenter() const {
+        return center;
+    }
+    double GetRadius() const {
+        return radius;
+    }
 };
 
