@@ -15,8 +15,6 @@ public:
     explicit
     TimeSeries(const char* CSVfileName);
 
-    ~TimeSeries();
-
     // this function returns the keys vector
     const std::vector<std::string>& GetFeatures() const;
 
