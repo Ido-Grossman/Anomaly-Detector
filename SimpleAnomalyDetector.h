@@ -8,8 +8,8 @@
 #include "minCircle.h"
 #include <vector>
 #include <algorithm>
-#include <string.h>
-#include <math.h>
+#include <cstring>
+#include <cmath>
 
 struct correlatedFeatures{
 	std::string feature1,feature2;  // names of the correlated features
@@ -36,7 +36,6 @@ public:
 	}
 
 private:
-    void buildCf(std::string feature1, std::string feature2, Point** points, int &featureSize, float& m);
     float calcCfThreshold(Point** points, int &size, Line &linearReg) const;
 };
 
