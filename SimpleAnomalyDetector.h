@@ -28,13 +28,12 @@ public:
 	virtual void learnNormal(const TimeSeries& ts);
 	virtual std::vector<AnomalyReport> detect(const TimeSeries& ts);
 
-	std::vector<correlatedFeatures> getNormalModel() {
-        return cf;
-    }
+	std::vector<correlatedFeatures> getNormalModel(){
+		return cf;
+	}
 
 private:
-    static float calcThreshold(std::vector<Point*> &points, int size, Line linearReg);
-
+    float calcCfThreshold(Point** points, int &size, Line &linearReg) const;
 };
 
 
