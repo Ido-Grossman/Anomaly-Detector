@@ -15,12 +15,13 @@ public:
     explicit
     TimeSeries(const char* CSVfileName);
 
-    ~TimeSeries();
-
     // this function returns the keys vector
     const std::vector<std::string>& GetFeatures() const;
 
     // this function given a key as an argument, returns the vector of the feature
     std::vector<float> GetFeatureVector(const std::string& featureName) const;
+
+    // destructor
+    ~TimeSeries();
 };
 #endif
