@@ -27,7 +27,7 @@ bool isPointInside(const Circle& circle, const Point& point);
 Circle MECFinder(Point** points, std::vector<Point> pointsOnCircle, ulong size);
 Circle createCircleFromPoints(const Point& p1, const Point& p2);
 bool isCircleValid(const Circle& circle, const std::vector<Point>& points);
-Point getCenterOfCircle(double p1X, double p1Y, double p2X, double p2Y);
+Point getCenterOfCircle(float p1X, float p1Y, float p2X, float p2Y);
 Circle createCircleFromPoints(const Point& p1, const Point& p2, const Point& p3);
 
 #endif /* MINCIRCLE_H_ */
