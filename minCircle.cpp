@@ -82,7 +82,12 @@ Circle MECFinder(Point** points, std::vector<Point> pointsOnCircle, ulong size){
  * Given 3 points, creates a circle from those points.
  */
 Circle createCircleFromPoints(const Point& p1, const Point& p2, const Point& p3){
-    Point point = getCenterOfCircle(p2.x - p1.x, p2.y - p1.y, p3.x - p1.x, p3.y - p1.y);
+    // We calculate the center of the circle and set point to the center.
+    float p1X = p2.x - p1.x, p1Y = p2.y - p1.y, p2X = p3.x - p1.x, p2Y = p3.y - p1.y;
+    float xCenter = p1X * p1X + p1Y * p1Y;
+    float yCenter = p2X * p2X + p2Y * p2Y;
+    float slope = p1X * p2Y - p1Y * p2X;
+    Point point = {(p2Y * xCenter - p1Y * yCenter) / (2 * slope),(p1X * yCenter - p2X * xCenter) / (2 * slope) };
     point.x += p1.x;
     point.y += p1.y;
     return {point, distance(point, p1)};
@@ -106,14 +111,4 @@ bool isCircleValid(const Circle& circle, const std::vector<Point>& points){
         if (!isPointInside(circle, point))
             return false;
     return true;
-}
-
-/*
- * Given 2 points it returns the center of the circle based on those 2 points.
- */
-Point getCenterOfCircle(float p1X, float p1Y, float p2X, float p2Y){
-    float xCenter = p1X * p1X + p1Y * p1Y;
-    float yCenter = p2X * p2X + p2Y * p2Y;
-    float slope = p1X * p2Y - p1Y * p2X;
-    return {(p2Y * xCenter - p1Y * yCenter) / (2 * slope),(p1X * yCenter - p2X * xCenter) / (2 * slope) };
 }
