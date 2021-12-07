@@ -40,7 +40,7 @@ Circle minimumCircle(std::vector<Point> points){
 
 // Given 2 points it returns the distance between those 2 points.
 float distance(const Point& p1, const Point& p2){
-    return sqrt((p1.x - p2.x) * (p1.x - p2.x) + (p1.y - p2.y) * (p1.y - p2.y));
+    return sqrt(pow(p1.x - p2.x, 2) + pow(p1.y - p2.y, 2));
 }
 
 // Given an array of points and its size, it finds the minimum circle that encloses those points and returns it.
@@ -63,7 +63,7 @@ Circle MECFinder(Point** points, std::vector<Point> pointsOnCircle, ulong size){
     int random = rand() % size;
     // takes the point in the random index and swap it with the last point in the vector.
     Point point = *points[random];
-    std::swap(*points[random], *points[size - 1]);
+    std::swap(points[random], points[size - 1]);
     // Recursively activates the function in order to find the MEC by calling it with size - 1 so we "remove" the
     // random point.
     Circle circle = MECFinder(points, pointsOnCircle, size - 1);
@@ -82,12 +82,7 @@ Circle MECFinder(Point** points, std::vector<Point> pointsOnCircle, ulong size){
  * Given 3 points, creates a circle from those points.
  */
 Circle createCircleFromPoints(const Point& p1, const Point& p2, const Point& p3){
-    // We calculate the center of the circle and set point to the center.
-    float p1X = p2.x - p1.x, p1Y = p2.y - p1.y, p2X = p3.x - p1.x, p2Y = p3.y - p1.y;
-    float xCenter = p1X * p1X + p1Y * p1Y;
-    float yCenter = p2X * p2X + p2Y * p2Y;
-    float slope = p1X * p2Y - p1Y * p2X;
-    Point point = {(p2Y * xCenter - p1Y * yCenter) / (2 * slope),(p1X * yCenter - p2X * xCenter) / (2 * slope) };
+    Point point = getCenterOfCircle(p2.x - p1.x, p2.y - p1.y, p3.x - p1.x, p3.y - p1.y);
     point.x += p1.x;
     point.y += p1.y;
     return {point, distance(point, p1)};
@@ -97,9 +92,8 @@ Circle createCircleFromPoints(const Point& p1, const Point& p2, const Point& p3)
  * Given 2 points, it creates a circle from those 2 points.
  */
 Circle createCircleFromPoints(const Point& p1, const Point& p2){
-    Point center = Point((p1.x + p2.x) / 2.0f, (p1.y + p2.y) / 2.0f );
-    float dist = distance(p1, p2) / 2.0f;
-    return {center, dist };
+    Point center = Point((p1.x + p2.x) / 2, (p1.y + p2.y) / 2 );
+    return {center, distance(p1, p2) / 2 };
 }
 
 /*
@@ -111,4 +105,14 @@ bool isCircleValid(const Circle& circle, const std::vector<Point>& points){
         if (!isPointInside(circle, point))
             return false;
     return true;
+}
+
+/*
+ * Given 2 points it returns the center of the circle based on those 2 points.
+ */
+Point getCenterOfCircle(double p1X, double p1Y, double p2X, double p2Y){
+    double xCenter = p1X * p1X + p1Y * p1Y;
+    double yCenter = p2X * p2X + p2Y * p2Y;
+    double slope = p1X * p2Y - p1Y * p2X;
+    return Point((p2Y * xCenter - p1Y * yCenter) / (2 * slope),(p1X * yCenter - p2X * xCenter) / (2 * slope) );
 }
