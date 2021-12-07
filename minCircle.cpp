@@ -1,5 +1,3 @@
-#pragma clang diagnostic push
-#pragma ide diagnostic ignored "misc-no-recursion"
 // ID: 324603422 (Santiago Szterenberg) && 208985424 (Ido Grossman).
 #include "anomaly_detection_util.h"
 #include "minCircle.h"
@@ -48,19 +46,15 @@ float distance(const Point& p1, const Point& p2){
 // Given an array of points and its size, it finds the minimum circle that encloses those points and returns it.
 Circle findMinCircle(Point** points, size_t size){
     // Creates a copy of the points in a vector and activates the MECFinder function on the vecttor and an empty vector
-    std::vector<Point> pointsCopy = {};
-    for (int i = 0; i < size; ++i) {
-        pointsCopy.push_back(*points[i]);
-    }
     std::vector<Point> pointsOnCircle = {};
-    return MECFinder(pointsCopy, pointsOnCircle, size);
+    return MECFinder(points, pointsOnCircle, size);
 }
 
 /*
  * Given a vector of points and a vector of points on the circle and the size of the circle, it finds the MEC of those
  * points.
  */
-Circle MECFinder(std::vector<Point>& points, std::vector<Point> pointsOnCircle, ulong size){
+Circle MECFinder(Point** points, std::vector<Point> pointsOnCircle, ulong size){
     // if we have no more points or the size of points on circle is 3, we can create a minimum circle from the points
     // on the circle.
     if (size == 0 || pointsOnCircle.size() == 3)
@@ -68,7 +62,7 @@ Circle MECFinder(std::vector<Point>& points, std::vector<Point> pointsOnCircle, 
     // Gets a random value and sets the mod size of him inside random parameter.
     int random = rand() % size;
     // takes the point in the random index and swap it with the last point in the vector.
-    Point point = points[random];
+    Point point = *points[random];
     std::swap(points[random], points[size - 1]);
     // Recursively activates the function in order to find the MEC by calling it with size - 1 so we "remove" the
     // random point.
