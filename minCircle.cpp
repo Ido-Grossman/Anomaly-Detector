@@ -45,7 +45,7 @@ float distance(const Point& p1, const Point& p2){
 
 // Given an array of points and its size, it finds the minimum circle that encloses those points and returns it.
 Circle findMinCircle(Point** points, size_t size){
-    // Creates a copy of the points in a vector and activates the MECFinder function on the vecttor and an empty vector
+    // Creates a copy of the points in a vector and activates the MECFinder function on the vector and an empty vector
     std::vector<Point> pointsOnCircle = {};
     return MECFinder(points, pointsOnCircle, size);
 }
