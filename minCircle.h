@@ -24,7 +24,7 @@ public:
 Circle findMinCircle(Point** points,size_t size);
 float distance(const Point& p1, const Point& p2);
 bool isPointInside(const Circle& circle, const Point& point);
-Circle MECFinder(std::vector<Point>& points, std::vector<Point> pointsOnCircle, ulong size);
+Circle MECFinder(Point** points, std::vector<Point> pointsOnCircle, ulong size);
 Circle createCircleFromPoints(const Point& p1, const Point& p2);
 bool isCircleValid(const Circle& circle, const std::vector<Point>& points);
 Point getCenterOfCircle(double p1X, double p1Y, double p2X, double p2Y);
