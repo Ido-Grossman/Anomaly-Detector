@@ -32,6 +32,7 @@ public:
 	virtual void learnNormal(const TimeSeries& ts);
 	virtual std::vector<AnomalyReport> detect(const TimeSeries& ts);
 
+    virtual bool isAnomaly(float x, float y, correlatedFeatures cf);
 	std::vector<correlatedFeatures> getNormalModel(){
 		return cf;
 	}
