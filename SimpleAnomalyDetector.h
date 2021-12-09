@@ -15,6 +15,7 @@ struct correlatedFeatures{
 	float corrlation;
 	Line lin_reg;
 	float threshold;
+    bool lowerThenMax = false;
 };
 
 
@@ -25,16 +26,28 @@ public:
 	SimpleAnomalyDetector();
 	virtual ~SimpleAnomalyDetector();
 
+    void learnHelper(const TimeSeries& ts, float minThreshold, float maxThreshold);
 	virtual void learnNormal(const TimeSeries& ts);
 	virtual std::vector<AnomalyReport> detect(const TimeSeries& ts);
 
 	std::vector<correlatedFeatures> getNormalModel(){
 		return cf;
 	}
-
+protected:
+    std::vector<correlatedFeatures> GetCF() {
+        return cf;
+    }
+    void setThreshold(float threshold) {
+        _threshold = threshold;
+    }
+    float getThreshold() {
+        return _threshold;
+    }
 private:
     float calcCfThreshold(Point** points, int &size, Line &linearReg) const;
-};
+}
+
+
 
 
 

@@ -18,16 +18,14 @@ float SimpleAnomalyDetector::calcCfThreshold(Point** points, int &size, Line &li
     return max;
 }
 
-/*
- * learns the normal linear reg for each of the correlating features.
- */
-void SimpleAnomalyDetector::learnNormal(const TimeSeries& ts){
+void SimpleAnomalyDetector::learnHelper(const TimeSeries& ts, float minThreshold, float maxThreshold) {
     // Getting the features name from the timeseries and the collSize of the features.
+    bool isLowerThenMax;
     std::vector<std::string> features = ts.GetFeatures();
     int collSize = ts.GetFeatureVector(features[0]).size();
     ulong size = features.size();
     /*
-     * Goes over each and every one of the features and checks which features correlates the most with it,
+     * Goes over each one of the features and checks which features correlates the most with it,
      * after it checks for the current feature which feature correlate the most it creates a new correlated features
      * and updates the features and the linear reg of the features.
      */
@@ -44,11 +42,14 @@ void SimpleAnomalyDetector::learnNormal(const TimeSeries& ts){
             }
         }
         // If one of the features had correlation with the current feature it creates them as correlated features.
-        if (c != -1 && m > _threshold) {
+        if (c != -1 && m > minThreshold) {
             correlatedFeatures coFeatures;
             coFeatures.feature1 = features[i];
             coFeatures.feature2 = features[c];
             coFeatures.corrlation = m;
+            if (coFeatures.threshold < maxThreshold) {
+                coFeatures.lowerThenMax = true;
+            }
             std::vector<float> feature1Vec = ts.GetFeatureVector(features[i]);
             std::vector<float> feature2Vec = ts.GetFeatureVector(features[c]);
             std::vector<Point*> points;
@@ -65,24 +66,30 @@ void SimpleAnomalyDetector::learnNormal(const TimeSeries& ts){
 }
 
 /*
+ * learns the normal linear reg for each of the correlating features.
+ */
+void SimpleAnomalyDetector::learnNormal(const TimeSeries& ts){
+    learnHelper(ts, _threshold, _threshold);
+}
+
+/*
  * Detects all the anomalies in the time series
  */
 std::vector<AnomalyReport> SimpleAnomalyDetector::detect(const TimeSeries& ts){
     // Opening a map of the features and gets the size of cf and the lines size.
-	std::vector<std::string> features = ts.GetFeatures();
     ulong size = cf.size();
     // Creates a vector of anomaly reports.
     std::vector<AnomalyReport> reports;
     for (int i = 0; i < size; i++) {
         // For debugging creates a parameter of the correlated feature and the features name (and Comfortability)
-        std::string feature1Namer = cf[i].feature1;
+        std::string feature1Name = cf[i].feature1;
         std::string feature2Name = cf[i].feature2;
         std::vector<float> feature1 = ts.GetFeatureVector(cf[i].feature1);
         std::vector<float> feature2 = ts.GetFeatureVector(cf[i].feature2);
         Line lineReg = cf[i].lin_reg;
         float threshold = cf[i].threshold;
         int time = 1;
-        std::string description = feature1Namer + "-";
+        std::string description = feature1Name + "-";
         description += feature2Name;
         // Goes over each point in the points vector of the correlated features and checks if it's above or under
         // the _threshold, if it's above it creates it as anomaly and pushes it to the anomaly vector.
