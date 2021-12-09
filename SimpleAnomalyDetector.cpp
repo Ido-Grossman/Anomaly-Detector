@@ -18,16 +18,14 @@ float SimpleAnomalyDetector::calcCfThreshold(Point** points, int &size, Line &li
     return max;
 }
 
-/*
- * learns the normal linear reg for each of the correlating features.
- */
-void SimpleAnomalyDetector::learnNormal(const TimeSeries& ts){
+void SimpleAnomalyDetector::learnHelper(const TimeSeries& ts, float minThreshold, float maxThreshold) {
     // Getting the features name from the timeseries and the collSize of the features.
+    bool isLowerThenMax;
     std::vector<std::string> features = ts.GetFeatures();
     int collSize = ts.GetFeatureVector(features[0]).size();
     ulong size = features.size();
     /*
-     * Goes over each and every one of the features and checks which features correlates the most with it,
+     * Goes over each one of the features and checks which features correlates the most with it,
      * after it checks for the current feature which feature correlate the most it creates a new correlated features
      * and updates the features and the linear reg of the features.
      */
@@ -44,7 +42,7 @@ void SimpleAnomalyDetector::learnNormal(const TimeSeries& ts){
             }
         }
         // If one of the features had correlation with the current feature it creates them as correlated features.
-        if (c != -1 && m > _threshold) {
+        if (c != -1 && m > minThreshold) {
             correlatedFeatures coFeatures;
             coFeatures.feature1 = features[i];
             coFeatures.feature2 = features[c];
@@ -57,7 +55,16 @@ void SimpleAnomalyDetector::learnNormal(const TimeSeries& ts){
                 points.push_back(new Point(feature1Vec[j], feature2Vec[j]));
             }
             coFeatures.lin_reg = linear_reg(&points[0], collSize);
-            coFeatures.threshold = calcCfThreshold(&points[0], collSize, coFeatures.lin_reg);
+            if (coFeatures.threshold < maxThreshold) {
+                coFeatures.lowerThenMax = true;
+                Circle circle = findMinCircle(&points[0], collSize);
+                coFeatures.threshold = circle.radius;
+                coFeatures.cx = circle.center.x;
+                coFeatures.cy = circle.center.y;
+            }
+            else {
+                coFeatures.threshold = calcCfThreshold(&points[0], collSize, coFeatures.lin_reg);
+            }
             coFeatures.threshold *= 1.1;
             cf.push_back(coFeatures);
         }
@@ -65,36 +72,45 @@ void SimpleAnomalyDetector::learnNormal(const TimeSeries& ts){
 }
 
 /*
- * Detects all the anomalies in the time series
+ * learns the normal linear reg for each of the correlating features.
+ */
+void SimpleAnomalyDetector::learnNormal(const TimeSeries& ts){
+    learnHelper(ts, _threshold, _threshold);
+}
+
+/*
+ * Detects all of the anomalies in the timeseries
  */
 std::vector<AnomalyReport> SimpleAnomalyDetector::detect(const TimeSeries& ts){
     // Opening a map of the features and gets the size of cf and the lines size.
-	std::vector<std::string> features = ts.GetFeatures();
-    ulong size = cf.size();
+    unsigned long size = cf.size();
     // Creates a vector of anomaly reports.
     std::vector<AnomalyReport> reports;
     for (int i = 0; i < size; i++) {
         // For debugging creates a parameter of the correlated feature and the features name (and Comfortability)
-        std::string feature1Name = cf[i].feature1;
+        std::string feature1Namer = cf[i].feature1;
         std::string feature2Name = cf[i].feature2;
         std::vector<float> feature1 = ts.GetFeatureVector(cf[i].feature1);
         std::vector<float> feature2 = ts.GetFeatureVector(cf[i].feature2);
         Line lineReg = cf[i].lin_reg;
         float threshold = cf[i].threshold;
         int time = 1;
-        std::string description = feature1Name + "-";
+        std::string description = feature1Namer + "-";
         description += feature2Name;
         // Goes over each point in the points vector of the correlated features and checks if it's above or under
         // the _threshold, if it's above it creates it as anomaly and pushes it to the anomaly vector.
         for (int j = 0; j < feature2.size(); j++, time++) {
             float y = feature2[j];
             float x = feature1[j];
-            float distanceFromLine = std::abs(y - lineReg.f(x));
-            if (distanceFromLine > threshold) {
+            if (isAnomaly(x, y, cf[i])){
                 AnomalyReport anomalyReport(description, time);
                 reports.push_back(anomalyReport);
             }
         }
     }
     return reports;
+}
+
+bool SimpleAnomalyDetector::isAnomaly(float x, float y, correlatedFeatures corelateF) {
+    return (std::abs(y - corelateF.lin_reg.f(x)) > corelateF.threshold);
 }
