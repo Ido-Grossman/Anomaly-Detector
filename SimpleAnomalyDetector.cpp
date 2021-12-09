@@ -55,7 +55,7 @@ void SimpleAnomalyDetector::learnHelper(const TimeSeries& ts, float minThreshold
                 points.push_back(new Point(feature1Vec[j], feature2Vec[j]));
             }
             coFeatures.lin_reg = linear_reg(&points[0], collSize);
-            if (coFeatures.threshold < maxThreshold) {
+            if (m < maxThreshold) {
                 coFeatures.lowerThenMax = true;
                 Circle circle = findMinCircle(&points[0], collSize);
                 coFeatures.threshold = circle.radius;
