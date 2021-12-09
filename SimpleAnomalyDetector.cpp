@@ -25,7 +25,7 @@ void SimpleAnomalyDetector::learnNormal(const TimeSeries& ts){
     // Getting the features name from the timeseries and the collSize of the features.
     std::vector<std::string> features = ts.GetFeatures();
     int collSize = ts.GetFeatureVector(features[0]).size();
-    int size = features.size();
+    ulong size = features.size();
     /*
      * Goes over each and every one of the features and checks which features correlates the most with it,
      * after it checks for the current feature which feature correlate the most it creates a new correlated features
@@ -40,7 +40,7 @@ void SimpleAnomalyDetector::learnNormal(const TimeSeries& ts){
                     , collSize));
             if (p > m) {
                 m = p;
-                c= j;
+                c = j;
             }
         }
         // If one of the features had correlation with the current feature it creates them as correlated features.
@@ -58,19 +58,19 @@ void SimpleAnomalyDetector::learnNormal(const TimeSeries& ts){
             }
             coFeatures.lin_reg = linear_reg(&points[0], collSize);
             coFeatures.threshold = calcCfThreshold(&points[0], collSize, coFeatures.lin_reg);
-            coFeatures.threshold *= 1.2;
+            coFeatures.threshold *= 1.1;
             cf.push_back(coFeatures);
         }
     }
 }
 
 /*
- * Detects all of the anomalies in the timeseries
+ * Detects all the anomalies in the time series
  */
 std::vector<AnomalyReport> SimpleAnomalyDetector::detect(const TimeSeries& ts){
     // Opening a map of the features and gets the size of cf and the lines size.
 	std::vector<std::string> features = ts.GetFeatures();
-    unsigned long size = cf.size();
+    ulong size = cf.size();
     // Creates a vector of anomaly reports.
     std::vector<AnomalyReport> reports;
     for (int i = 0; i < size; i++) {
