@@ -1,7 +1,6 @@
 #include "HybridAnomalyDetector.h"
 #define MAXTHRESHOLD 0.9
 
-float threshold = 0.9;
 HybridAnomalyDetector::HybridAnomalyDetector() {
     setThreshold(0.5);
 }
@@ -11,10 +10,10 @@ void HybridAnomalyDetector::learnNormal(const TimeSeries &ts) {
 }
 
 bool HybridAnomalyDetector::isAnomaly(float x, float y, correlatedFeatures corelateF) {
-    float cfX = corelateF.circle.center.x;
-    float cfY = corelateF.circle.center.y;
-    return ((corelateF.corrlation >= threshold && SimpleAnomalyDetector::isAnomaly(x, y, corelateF)) ||
-    corelateF.lowerThenMax && distance(Point(cfX, cfY), Point(x, y)) > corelateF.threshold);
+    float cfX = corelateF.cx;
+    float cfY = corelateF.cy;
+    return ((!corelateF.lowerThenMax && SimpleAnomalyDetector::isAnomaly(x, y, corelateF)) ||
+            (corelateF.lowerThenMax && distance(Point(cfX, cfY), Point(x, y)) > corelateF.threshold));
 }
 
 HybridAnomalyDetector::~HybridAnomalyDetector() = default;

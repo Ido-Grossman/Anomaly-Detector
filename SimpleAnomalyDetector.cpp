@@ -47,7 +47,6 @@ void SimpleAnomalyDetector::learnHelper(const TimeSeries& ts, float minThreshold
             coFeatures.feature1 = features[i];
             coFeatures.feature2 = features[c];
             coFeatures.corrlation = m;
-
             std::vector<float> feature1Vec = ts.GetFeatureVector(features[i]);
             std::vector<float> feature2Vec = ts.GetFeatureVector(features[c]);
             std::vector<Point*> points;
@@ -55,14 +54,17 @@ void SimpleAnomalyDetector::learnHelper(const TimeSeries& ts, float minThreshold
             for (int j = 0; j < collSize; j++) {
                 points.push_back(new Point(feature1Vec[j], feature2Vec[j]));
             }
+            coFeatures.lin_reg = linear_reg(&points[0], collSize);
             if (coFeatures.threshold < maxThreshold) {
                 coFeatures.lowerThenMax = true;
-                coFeatures.circle = findMinCircle(&points[0], features.size());
+                Circle circle = findMinCircle(&points[0], collSize);
+                coFeatures.threshold = circle.radius;
+                coFeatures.cx = circle.center.x;
+                coFeatures.cy = circle.center.y;
             }
             else {
-                coFeatures.lin_reg = linear_reg(&points[0], collSize);
+                coFeatures.threshold = calcCfThreshold(&points[0], collSize, coFeatures.lin_reg);
             }
-            coFeatures.threshold = calcCfThreshold(&points[0], collSize, coFeatures.lin_reg);
             coFeatures.threshold *= 1.1;
             cf.push_back(coFeatures);
         }
@@ -81,7 +83,6 @@ void SimpleAnomalyDetector::learnNormal(const TimeSeries& ts){
  */
 std::vector<AnomalyReport> SimpleAnomalyDetector::detect(const TimeSeries& ts){
     // Opening a map of the features and gets the size of cf and the lines size.
-	std::vector<std::string> features = ts.GetFeatures();
     unsigned long size = cf.size();
     // Creates a vector of anomaly reports.
     std::vector<AnomalyReport> reports;
@@ -101,7 +102,7 @@ std::vector<AnomalyReport> SimpleAnomalyDetector::detect(const TimeSeries& ts){
         for (int j = 0; j < feature2.size(); j++, time++) {
             float y = feature2[j];
             float x = feature1[j];
-            if (isAnomaly(x, y, cf[j])){
+            if (isAnomaly(x, y, cf[i])){
                 AnomalyReport anomalyReport(description, time);
                 reports.push_back(anomalyReport);
             }
@@ -111,5 +112,5 @@ std::vector<AnomalyReport> SimpleAnomalyDetector::detect(const TimeSeries& ts){
 }
 
 bool SimpleAnomalyDetector::isAnomaly(float x, float y, correlatedFeatures corelateF) {
-    return (std::abs(y - corelateF.lin_reg.f(x))>corelateF.threshold);
+    return (std::abs(y - corelateF.lin_reg.f(x)) > corelateF.threshold);
 }
