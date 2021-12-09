@@ -47,9 +47,7 @@ void SimpleAnomalyDetector::learnHelper(const TimeSeries& ts, float minThreshold
             coFeatures.feature1 = features[i];
             coFeatures.feature2 = features[c];
             coFeatures.corrlation = m;
-            if (coFeatures.threshold < maxThreshold) {
-                coFeatures.lowerThenMax = true;
-            }
+
             std::vector<float> feature1Vec = ts.GetFeatureVector(features[i]);
             std::vector<float> feature2Vec = ts.GetFeatureVector(features[c]);
             std::vector<Point*> points;
@@ -57,7 +55,13 @@ void SimpleAnomalyDetector::learnHelper(const TimeSeries& ts, float minThreshold
             for (int j = 0; j < collSize; j++) {
                 points.push_back(new Point(feature1Vec[j], feature2Vec[j]));
             }
-            coFeatures.lin_reg = linear_reg(&points[0], collSize);
+            if (coFeatures.threshold < maxThreshold) {
+                coFeatures.lowerThenMax = true;
+                coFeatures.circle = findMinCircle(&points[0], features.size());
+            }
+            else {
+                coFeatures.lin_reg = linear_reg(&points[0], collSize);
+            }
             coFeatures.threshold = calcCfThreshold(&points[0], collSize, coFeatures.lin_reg);
             coFeatures.threshold *= 1.1;
             cf.push_back(coFeatures);
