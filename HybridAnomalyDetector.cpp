@@ -1,12 +1,13 @@
-
 #include "HybridAnomalyDetector.h"
+#define MAXTHRESHOLD 0.9
 
 HybridAnomalyDetector::HybridAnomalyDetector() {
-	// TODO Auto-generated constructor stub
-
+    setThreshold(0.5);
 }
 
-HybridAnomalyDetector::~HybridAnomalyDetector() {
-	// TODO Auto-generated destructor stub
+void HybridAnomalyDetector::learnNormal(const TimeSeries &ts) {
+    SimpleAnomalyDetector::learnHelper(ts, getThreshold(), MAXTHRESHOLD);
 }
+
+HybridAnomalyDetector::~HybridAnomalyDetector() = default;
 
