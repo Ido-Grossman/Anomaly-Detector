@@ -6,7 +6,7 @@ HybridAnomalyDetector::HybridAnomalyDetector() {
 }
 
 void HybridAnomalyDetector::learnNormal(const TimeSeries &ts) {
-    SimpleAnomalyDetector::learnHelper(ts, getThreshold(), MAXTHRESHOLD);
+    learnHelper(ts, getThreshold(), MAXTHRESHOLD);
 }
 
 HybridAnomalyDetector::~HybridAnomalyDetector() = default;

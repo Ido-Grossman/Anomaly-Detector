@@ -45,7 +45,7 @@ protected:
     }
 private:
     float calcCfThreshold(Point** points, int &size, Line &linearReg) const;
-}
+};
 
 
 
