@@ -75,14 +75,14 @@ std::vector<AnomalyReport> SimpleAnomalyDetector::detect(const TimeSeries& ts){
     std::vector<AnomalyReport> reports;
     for (int i = 0; i < size; i++) {
         // For debugging creates a parameter of the correlated feature and the features name (and Comfortability)
-        std::string feature1Namer = cf[i].feature1;
+        std::string feature1Name = cf[i].feature1;
         std::string feature2Name = cf[i].feature2;
         std::vector<float> feature1 = ts.GetFeatureVector(cf[i].feature1);
         std::vector<float> feature2 = ts.GetFeatureVector(cf[i].feature2);
         Line lineReg = cf[i].lin_reg;
         float threshold = cf[i].threshold;
         int time = 1;
-        std::string description = feature1Namer + "-";
+        std::string description = feature1Name + "-";
         description += feature2Name;
         // Goes over each point in the points vector of the correlated features and checks if it's above or under
         // the _threshold, if it's above it creates it as anomaly and pushes it to the anomaly vector.
