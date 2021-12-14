@@ -54,9 +54,9 @@ public:
     }
 };
 
-class Upload :public Command {
+class Upload : public Command {
 public:
-    Upload(DefaultIO* dio): Command(dio, "upload a time series csv file"){}
+    Upload(DefaultIO* dio):Command(dio, "upload a time series csv file"){}
     void execute(struct Ts* ts) override {
         dio->write("Please upload your local train CSV file.\n");
         dio->readFiles("anomalyTrain.csv");
@@ -67,7 +67,7 @@ public:
     }
 };
 
-class Thresh :public Command {
+class Thresh : Command {
     float userThreshold = 0;
 public:
     Thresh(DefaultIO* dio): Command(dio, "algorithm settings"){}
@@ -84,7 +84,7 @@ public:
     }
 };
 
-class Detect :public Command {
+class Detect : Command {
 public:
     Detect(DefaultIO* dio):Command(dio, "detect anomalies"){}
     void execute(struct Ts* ts) override {
@@ -98,7 +98,7 @@ public:
     }
 };
 
-class Results :public Command {
+class Results : Command {
 public:
     Results(DefaultIO* dio):Command(dio, "display results"){}
     void execute(struct Ts* ts) override {
@@ -111,7 +111,7 @@ public:
     }
 };
 
-class Analyze :public Command {
+class Analyze : Command {
     vector<userAnomaly> userReports;
 public:
     Analyze(DefaultIO* dio): Command(dio, "upload anomalies and analyze results"){}
@@ -132,7 +132,7 @@ public:
     }
 };
 
-class Fin :public Command {
+class Fin : Command {
 public:
     Fin(DefaultIO* dio): Command(dio, "exit"){}
     void execute(struct Ts* ts) override {
