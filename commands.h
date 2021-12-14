@@ -23,6 +23,7 @@ public:
 	void readFiles(string fileName){
         ofstream fileOut(fileName);
         string bits;
+        // in mainTrain we finish with "done"
         while ((bits = read()) != "done"){
             fileOut << bits << endl;
         }
@@ -53,7 +54,7 @@ public:
     }
 };
 
-class Upload : Command {
+class Upload :public Command {
 public:
     Upload(DefaultIO* dio): Command(dio, "upload a time series csv file"){}
     void execute(struct Ts* ts) override {
@@ -66,7 +67,7 @@ public:
     }
 };
 
-class Thresh : Command {
+class Thresh :public Command {
     float userThreshold = 0;
 public:
     Thresh(DefaultIO* dio): Command(dio, "algorithm settings"){}
@@ -83,7 +84,7 @@ public:
     }
 };
 
-class Detect : Command {
+class Detect :public Command {
 public:
     Detect(DefaultIO* dio):Command(dio, "detect anomalies"){}
     void execute(struct Ts* ts) override {
@@ -97,7 +98,7 @@ public:
     }
 };
 
-class Results : Command {
+class Results :public Command {
 public:
     Results(DefaultIO* dio):Command(dio, "display results"){}
     void execute(struct Ts* ts) override {
@@ -110,7 +111,7 @@ public:
     }
 };
 
-class Analyze : Command {
+class Analyze :public Command {
     vector<userAnomaly> userReports;
 public:
     Analyze(DefaultIO* dio): Command(dio, "upload anomalies and analyze results"){}
@@ -131,7 +132,7 @@ public:
     }
 };
 
-class Fin : Command {
+class Fin :public Command {
 public:
     Fin(DefaultIO* dio): Command(dio, "exit"){}
     void execute(struct Ts* ts) override {

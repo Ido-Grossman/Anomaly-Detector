@@ -9,10 +9,12 @@
 using namespace std;
 
 class CLI {
+    vector<Command*> commands;
 	DefaultIO* dio;
 public:
 	CLI(DefaultIO* dio);
 	void start();
+    int toIntFromStr(string numStr);
 	virtual ~CLI();
 };
 
