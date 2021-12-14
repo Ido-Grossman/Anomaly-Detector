@@ -35,6 +35,7 @@ public:
 struct Ts {
     TimeSeries* train;
     TimeSeries* test;
+    float threshold = 0.9;
 };
 
 // you may edit this class
@@ -54,42 +55,53 @@ public:
 
 class Upload : Command {
 public:
-    Upload(DefaultIO* dio, const string desc, struct Ts* ts): Command(dio, desc, ts){}
+    Upload(DefaultIO* dio, struct Ts* ts): Command(dio, "upload a time series csv file", ts){}
     void execute() override {
-        dio->write("Please upload your local train CSV file.");
-        dio->readFiles("train.csv");
-        dio->write("Upload complete.");
+        dio->write("Please upload your local train CSV file.\n");
+        dio->readFiles("anomalyTrain.csv");
+        dio->write("Upload complete.\n");
         ts->train = new TimeSeries("train.csv");
-        dio->write("Please upload your local train CSV file.");
-        dio->readFiles("test.csv");
-        dio->write("Upload complete.");
+        dio->write("Please upload your local test CSV file.\n");
+        dio->readFiles("anomalyTest.csv");
+        dio->write("Upload complete.\n");
         ts->test = new TimeSeries("test.csv");
     }
 };
 
 class Thresh : Command {
+    float userThreshold;
 public:
-    Thresh(DefaultIO* dio, const string desc, struct Ts* ts): Command(dio, desc, ts){}
+    Thresh(DefaultIO* dio, struct Ts* ts): Command(dio, "algorithm settings", ts){}
+    void execute() override {
+        dio->write("the current correlation threshold is ");
+        dio->write(ts->threshold);
+        dio->write("\n");
+        dio->read(&userThreshold);
+        while (userThreshold > 1 && userThreshold < 0) {
+            dio->write("please choose a value between 0 and 1");
+
+        }
+    }
 };
 
 class Detect : Command {
 public:
-    Detect(DefaultIO* dio, const string desc, struct Ts* ts): Command(dio, desc, ts){}
+    Detect(DefaultIO* dio, struct Ts* ts): Command(dio, "detect anomalies", ts){}
 };
 
 class Results : Command {
 public:
-    Results(DefaultIO* dio, const string desc, struct Ts* ts): Command(dio, desc, ts){}
+    Results(DefaultIO* dio, struct Ts* ts): Command(dio, "display results", ts){}
 };
 
 class Analyze : Command {
 public:
-    Analyze(DefaultIO* dio, const string desc, struct Ts* ts): Command(dio, desc, ts){}
+    Analyze(DefaultIO* dio, struct Ts* ts): Command(dio, "upload anomalies and analyze results", ts){}
 };
 
 class Fin : Command {
 public:
-    Fin(DefaultIO* dio, const string desc, struct Ts* ts): Command(dio, desc, ts){}
+    Fin(DefaultIO* dio, struct Ts* ts): Command(dio, "exit", ts){}
 };
 
 // implement here your command classes
