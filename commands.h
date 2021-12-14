@@ -190,7 +190,6 @@ class Fin : public Command {
 public:
     Fin(DefaultIO* dio): Command(dio, "exit"){}
     void execute(struct Ts* ts) override {
-
     }
 };
 
