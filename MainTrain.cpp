@@ -1,7 +1,6 @@
 /*
  * run2.cpp
  *
- *  Created on: 8 בדצמ× 2019
  *      Author: Eli
  */
 

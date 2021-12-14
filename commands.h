@@ -20,7 +20,14 @@ public:
 	virtual void read(float* f)=0;
 	virtual ~DefaultIO(){}
 
-	// you may add additional methods here
+	void readFiles(string fileName){
+        ofstream fileOut(fileName);
+        string bits;
+        while ((bits = read()) != "done"){
+            fileOut << bits << endl;
+        }
+        fileOut.close();
+    }
 };
 
 // you may add here helper classes
