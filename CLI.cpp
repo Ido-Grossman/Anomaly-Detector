@@ -21,7 +21,8 @@ void CLI::start(){
             dio->write(index);
             dio->write(". ");
             dio->write(toPrint + "\n");
-            toPrint = commands[index]->description;
+            if (index != 6)
+                toPrint = commands[index]->description;
         }
         string stringUserInput = dio->read();
         userInput = toIntFromStr(stringUserInput);
