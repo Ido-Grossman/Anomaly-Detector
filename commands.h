@@ -54,6 +54,7 @@ public:
 
 class Upload : Command {
 public:
+    Upload(DefaultIO* dio, const string desc, struct Ts* ts): Command(dio, desc, ts){}
     void execute() override {
         dio->write("Please upload your local train CSV file.");
         dio->readFiles("train.csv");
@@ -67,23 +68,28 @@ public:
 };
 
 class Thresh : Command {
-
+public:
+    Thresh(DefaultIO* dio, const string desc, struct Ts* ts): Command(dio, desc, ts){}
 };
 
 class Detect : Command {
-
+public:
+    Detect(DefaultIO* dio, const string desc, struct Ts* ts): Command(dio, desc, ts){}
 };
 
 class Results : Command {
-
+public:
+    Results(DefaultIO* dio, const string desc, struct Ts* ts): Command(dio, desc, ts){}
 };
 
 class Analyze : Command {
-
+public:
+    Analyze(DefaultIO* dio, const string desc, struct Ts* ts): Command(dio, desc, ts){}
 };
 
 class Fin : Command {
-
+public:
+    Fin(DefaultIO* dio, const string desc, struct Ts* ts): Command(dio, desc, ts){}
 };
 
 // implement here your command classes
