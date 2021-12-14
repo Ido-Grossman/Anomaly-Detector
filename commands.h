@@ -53,9 +53,9 @@ public:
     }
 };
 
-class Upload : Command {
+class Upload : public Command {
 public:
-    Upload(DefaultIO* dio): Command(dio, "upload a time series csv file"){}
+    Upload(DefaultIO* dio):Command(dio, "upload a time series csv file"){}
     void execute(struct Ts* ts) override {
         dio->write("Please upload your local train CSV file.\n");
         dio->readFiles("anomalyTrain.csv");
@@ -66,7 +66,7 @@ public:
     }
 };
 
-class Thresh : Command {
+class Thresh : public Command {
     float userThreshold = 0;
 public:
     Thresh(DefaultIO* dio): Command(dio, "algorithm settings"){}
@@ -83,7 +83,7 @@ public:
     }
 };
 
-class Detect : Command {
+class Detect : public Command {
 public:
     Detect(DefaultIO* dio):Command(dio, "detect anomalies"){}
     void execute(struct Ts* ts) override {
@@ -97,7 +97,7 @@ public:
     }
 };
 
-class Results : Command {
+class Results : public Command {
 public:
     Results(DefaultIO* dio):Command(dio, "display results"){}
     void execute(struct Ts* ts) override {
@@ -110,7 +110,7 @@ public:
     }
 };
 
-class Analyze : Command {
+class Analyze : public Command {
     vector<userAnomaly> userReports;
 public:
     Analyze(DefaultIO* dio): Command(dio, "upload anomalies and analyze results"){}
@@ -121,7 +121,8 @@ public:
         while (file.good()) {
             std::string line;
             getline(file, line, '\n');
-            int where = line.find(',');
+            if (line == "Done.") break;
+            ulong where = line.find(',');
             userAnomaly anomaly;
             anomaly.startTime = stoi(line.substr(0, where));
             anomaly.endTime = stoi(line.substr(where));
@@ -131,7 +132,7 @@ public:
     }
 };
 
-class Fin : Command {
+class Fin : public Command {
 public:
     Fin(DefaultIO* dio): Command(dio, "exit"){}
     void execute(struct Ts* ts) override {
