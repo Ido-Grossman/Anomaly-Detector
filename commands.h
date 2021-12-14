@@ -7,6 +7,7 @@
 #include <string.h>
 
 #include <fstream>
+#include <utility>
 #include <vector>
 #include "HybridAnomalyDetector.h"
 
@@ -19,7 +20,6 @@ public:
 	virtual void write(float f)=0;
 	virtual void read(float* f)=0;
 	virtual ~DefaultIO(){}
-
 	void readFiles(string fileName){
         ofstream fileOut(fileName);
         string bits;
@@ -32,14 +32,35 @@ public:
 
 // you may add here helper classes
 
+struct Ts {
+    TimeSeries* train;
+    TimeSeries* test;
+};
 
 // you may edit this class
 class Command{
+protected:
 	DefaultIO* dio;
+    struct Ts* ts;
 public:
-	Command(DefaultIO* dio):dio(dio){}
+    const string description;
+	Command(DefaultIO* dio, const string desc, struct Ts* ts):dio(dio), description(desc), ts(ts){}
 	virtual void execute()=0;
-	virtual ~Command(){}
+	virtual ~Command(){
+        delete dio;
+    }
+};
+
+class Upload : Command {
+public:
+    void execute() override {
+        dio->write("Please upload your local train CSV file.");
+        dio->readFiles("train.csv");
+        dio->write("Upload complete.");
+        dio->write("Please upload your local train CSV file.");
+        dio->readFiles("test.csv");
+        dio->write("Upload complete.");
+    }
 };
 
 // implement here your command classes
