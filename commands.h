@@ -23,6 +23,7 @@ public:
 	void readFiles(string fileName){
         ofstream fileOut(fileName);
         string bits;
+        // in mainTrain we finish with "done"
         while ((bits = read()) != "done"){
             fileOut << bits << endl;
         }
@@ -55,7 +56,7 @@ public:
 
 class Upload : public Command {
 public:
-    Upload(DefaultIO* dio):Command(dio, "upload a time series csv file"){}
+    Upload(DefaultIO* dio): Command(dio, "upload a time series csv file"){}
     void execute(struct Ts* ts) override {
         dio->write("Please upload your local train CSV file.\n");
         dio->readFiles("anomalyTrain.csv");
