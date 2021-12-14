@@ -10,9 +10,6 @@ using namespace std;
 
 class CLI {
 	DefaultIO* dio;
-    Command* commands;
-	TimeSeries* trainTs;
-    TimeSeries* testTs;
 public:
 	CLI(DefaultIO* dio);
 	void start();

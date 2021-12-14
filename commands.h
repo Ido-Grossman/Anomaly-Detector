@@ -48,6 +48,7 @@ public:
 	virtual void execute()=0;
 	virtual ~Command(){
         delete dio;
+        delete ts;
     }
 };
 
@@ -57,10 +58,32 @@ public:
         dio->write("Please upload your local train CSV file.");
         dio->readFiles("train.csv");
         dio->write("Upload complete.");
+        ts->train = new TimeSeries("train.csv");
         dio->write("Please upload your local train CSV file.");
         dio->readFiles("test.csv");
         dio->write("Upload complete.");
+        ts->test = new TimeSeries("test.csv");
     }
+};
+
+class Thresh : Command {
+
+};
+
+class Detect : Command {
+
+};
+
+class results : Command {
+
+};
+
+class Analyze : Command {
+
+};
+
+class Fin : Command {
+
 };
 
 // implement here your command classes
