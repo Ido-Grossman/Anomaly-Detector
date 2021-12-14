@@ -1,4 +1,3 @@
-// ID: 324603422 (Santiago Szterenberg) && 208985424 (Ido Grossman)
 #include "timeseries.h"
 
 // constructor for TimeSeries
@@ -40,6 +39,7 @@ std::vector<float> TimeSeries::GetFeatureVector(const std::string &featureName) 
     return table.find(featureName) -> second;
 }
 
-const std::vector<std::string>& TimeSeries::GetFeatures() const {
+const std::vector<std::string> & TimeSeries::GetFeatures() const {
     return this->keysVector;
 }
+
