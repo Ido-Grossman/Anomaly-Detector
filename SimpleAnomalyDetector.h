@@ -29,9 +29,11 @@ public:
 	virtual ~SimpleAnomalyDetector();
 
     void learnHelper(const TimeSeries& ts, float minThreshold, float maxThreshold);
+    void setThreshold(float threshold) {
+        _threshold = threshold;
+    }
 	virtual void learnNormal(const TimeSeries& ts);
 	virtual std::vector<AnomalyReport> detect(const TimeSeries& ts);
-
     virtual bool isAnomaly(float x, float y, correlatedFeatures cf);
 	std::vector<correlatedFeatures> getNormalModel(){
 		return cf;
@@ -39,9 +41,6 @@ public:
 protected:
     std::vector<correlatedFeatures> GetCF() {
         return cf;
-    }
-    void setThreshold(float threshold) {
-        _threshold = threshold;
     }
     float getThreshold() {
         return _threshold;
