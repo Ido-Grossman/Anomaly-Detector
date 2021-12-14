@@ -74,7 +74,7 @@ class Detect : Command {
 
 };
 
-class results : Command {
+class Results : Command {
 
 };
 
