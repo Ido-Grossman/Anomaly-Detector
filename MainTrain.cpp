@@ -82,7 +82,7 @@ int main(){
 	CLI cli(&std);
 	cli.start();
 	std.close();
-	check("output.txt","expectedOutput.txt");
+	check("/home/santiago/CLionProjects/IdoSanti/output.txt","/home/santiago/CLionProjects/IdoSanti/expectedOutput.txt");
 	cout<<"done"<<endl;
 	return 0;
 }
