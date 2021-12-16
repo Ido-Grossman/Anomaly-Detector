@@ -19,7 +19,7 @@ void CLI::start(){
         string toPrint = commands[0]->description;
         for (int index = 1; index < 7; ++index) {
             dio->write(index);
-            dio->write(". ");
+            dio->write(".");
             dio->write(toPrint + "\n");
             if (index != 6)
                 toPrint = commands[index]->description;
