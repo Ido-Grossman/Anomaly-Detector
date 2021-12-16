@@ -77,7 +77,7 @@ public:
         dio->write("\n");
         dio->read(&userThreshold);
         while (userThreshold > 1 && userThreshold < 0) {
-            dio->write("please choose a value between 0 and 1");
+            dio->write("please choose a value between 0 and 1\n");
             dio->read(&userThreshold);
         }
         ts->threshold = userThreshold;
@@ -95,7 +95,7 @@ public:
         detector.learnNormal(train);
         ts->reports = detector.detect(test);
         ts->size = test.GetFeatureVector(test.GetFeatures()[0]).size();
-        dio->write("anomaly detection complete");
+        dio->write("anomaly detection complete\n");
     }
 };
 
@@ -139,22 +139,17 @@ private:
 public:
     Analyze(DefaultIO* dio): Command(dio, "upload anomalies and analyze results"){}
     void execute(struct Ts* ts) override {
-        dio->write("Please upload your local anomalies file.");
-        dio->readFiles("userAnomalies.txt");
-        dio->write("Upload complete.");
+        dio->write("Please upload your local anomalies file.\n");
         mergeReports(ts);
-        std::ifstream file("userAnomalies.txt");
-        while (file.good()) {
-            std::string line;
-            getline(file, line, '\n');
-            if (line == "Done.") break;
+        string line = "";
+        while ((line = dio->read()) != "done") {
             ulong where = line.find(',');
             Anomaly anomaly;
             anomaly.startTime = stoi(line.substr(0, where));
-            anomaly.endTime = stoi(line.substr(where));
+            anomaly.endTime = stoi(line.substr(where + 1));
             userReports.push_back(anomaly);
         }
-        file.close();
+        dio->write("Upload complete.\n");
         ulong p = userReports.size();
         ulong n = ts->size;
         ulong fp = 0;
@@ -173,8 +168,8 @@ public:
                 }
             }
         }
-        float trueRate = roundf(((float) tp / (float) p) * 100) / 100;
-        float falseRate = roundf(((float) fp / (float) n) * 100) / 100;
+        float trueRate = floorf(((float) tp / (float) p) * 1000) / 1000;
+        float falseRate = floorf(((float) fp / (float) n) * 1000) / 1000;
         dio->write("True Positive Rate: ");
         dio->write(trueRate);
         dio->write("\n");
