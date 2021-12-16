@@ -1,6 +1,8 @@
 #include "CLI.h"
 
 CLI::CLI(DefaultIO* dio) {
+//    here we store the default io to the object
+//    and then we store the menu options to a vector
     this->dio = dio;
     commands.push_back(new Upload(dio));
     commands.push_back(new Thresh(dio));
@@ -13,7 +15,9 @@ CLI::CLI(DefaultIO* dio) {
 void CLI::start(){
     Ts ts;
     int userInput = 0;
+//    while the user input is not 5, (because we get a str from user) we continue to show the menu
     while (userInput != 5) {
+//        this loop shows the menu to the user
         this->dio->write("Welcome to the Anomaly Detection Server.\n");
         this->dio->write("Please choose an option:\n");
         string toPrint = commands[0]->description;
@@ -24,6 +28,7 @@ void CLI::start(){
             if (index != 6)
                 toPrint = commands[index]->description;
         }
+//        here we take the input from user and change it to int
         string stringUserInput = dio->read();
         userInput = toIntFromStr(stringUserInput);
         if (userInput <= 6 && userInput >= 0)

@@ -20,6 +20,7 @@ public:
 	virtual void write(float f)=0;
 	virtual void read(float* f)=0;
 	virtual ~DefaultIO()= default;
+//    This method reads from a file
 	void readFiles(string fileName){
         ofstream fileOut(fileName);
         string bits ="";
