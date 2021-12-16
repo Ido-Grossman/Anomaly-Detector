@@ -72,12 +72,13 @@ class Thresh : public Command {
 public:
     Thresh(DefaultIO* dio): Command(dio, "algorithm settings"){}
     void execute(struct Ts* ts) override {
-        dio->write("the current correlation threshold is ");
+        dio->write("The current correlation threshold is ");
         dio->write(ts->threshold);
         dio->write("\n");
+        dio->write("Type a new threshold\n");
         dio->read(&userThreshold);
         while (userThreshold > 1 && userThreshold < 0) {
-            dio->write("please choose a value between 0 and 1\n");
+            dio->write("please choose a value between 0 and 1.\n");
             dio->read(&userThreshold);
         }
         ts->threshold = userThreshold;
@@ -95,7 +96,7 @@ public:
         detector.learnNormal(train);
         ts->reports = detector.detect(test);
         ts->size = test.GetFeatureVector(test.GetFeatures()[0]).size();
-        dio->write("anomaly detection complete\n");
+        dio->write("anomaly detection complete.\n");
     }
 };
 
@@ -114,23 +115,25 @@ public:
 
 class Analyze : public Command {
 private:
-    vector<Anomaly> userReports;
-    vector<Anomaly> originReports;
-    void mergeReports(struct Ts* ts) {
+
+    void mergeReports(struct Ts* ts, vector<Anomaly>& originReports) {
         ulong size = ts->reports.size();
         for (int i = 0; i < size; i++) {
             Anomaly anomaly;
             anomaly.startTime = ts->reports[i].timeStep;
             anomaly.endTime = ts->reports[i].timeStep;
             anomaly.description = ts->reports[i].description;
-            for (int j = i; j < size; j++) {
+            for (int j = i + 1; j < size; j++) {
                 if (ts->reports[j].timeStep == anomaly.endTime + 1 &&
                     ts->reports[j].description == anomaly.description) {
                     anomaly.endTime = ts->reports[j].timeStep;
                 } else {
                     originReports.push_back(anomaly);
-                    i = j;
+                    i = j - 1;
                     break;
+                }
+                if (j == size - 1) {
+                    originReports.push_back(anomaly);
                 }
                 i = j;
             }
@@ -139,8 +142,10 @@ private:
 public:
     Analyze(DefaultIO* dio): Command(dio, "upload anomalies and analyze results"){}
     void execute(struct Ts* ts) override {
+        vector<Anomaly> userReports;
+        vector<Anomaly> originReports;
         dio->write("Please upload your local anomalies file.\n");
-        mergeReports(ts);
+        mergeReports(ts, originReports);
         string line = "";
         while ((line = dio->read()) != "done") {
             ulong where = line.find(',');
@@ -154,19 +159,26 @@ public:
         ulong n = ts->size;
         ulong fp = 0;
         ulong tp = 0;
-        for (int i = 0, j = 0; i < p; i++) {
+        bool foundOne;
+        for (int i = 0; i < p; i++, foundOne = false) {
             n -= (userReports[i].endTime - userReports[i].startTime) + 1;
-            for (; j < p; j++) {
-                if (userReports[j].startTime > userReports[i].endTime) {
-                    fp++;
-                    break;
-                } else if ((userReports[j].startTime >= userReports[i].startTime &&
-                            userReports[j].startTime < userReports[i].endTime) ||
-                            userReports[j].endTime > userReports[i].startTime &&
-                            userReports[j].endTime <= userReports[i].endTime) {
+        }
+        for (Anomaly& originReport : originReports) {
+            for (Anomaly& userReport : userReports) {
+                if ((originReport.startTime >= userReport.startTime &&
+                    originReport.startTime <= userReport.endTime) ||
+                    (originReport.endTime >= userReport.startTime &&
+                    originReport.endTime <= userReport.endTime) ||
+                    (originReport.startTime <= userReport.endTime &&
+                    originReport.endTime >= userReport.endTime)) {
                     tp++;
+                    foundOne = true;
+                    break;
                 }
             }
+            if (!foundOne)
+                fp++;
+            foundOne = false;
         }
         float trueRate = floorf(((float) tp / (float) p) * 1000) / 1000;
         float falseRate = floorf(((float) fp / (float) n) * 1000) / 1000;

@@ -1,12 +1,10 @@
 #include "HybridAnomalyDetector.h"
-#define MAXTHRESHOLD 0.9
+#define HYBRIDTHRESHOLD 0.5
 
-HybridAnomalyDetector::HybridAnomalyDetector() {
-    setThreshold(0.5);
-}
+HybridAnomalyDetector::HybridAnomalyDetector() = default;
 
 void HybridAnomalyDetector::learnNormal(const TimeSeries &ts) {
-    learnHelper(ts, getThreshold(), MAXTHRESHOLD);
+    learnHelper(ts, HYBRIDTHRESHOLD, getThreshold());
 }
 
 bool HybridAnomalyDetector::isAnomaly(float x, float y, correlatedFeatures corelateF) {
