@@ -19,10 +19,10 @@ public:
 	virtual void write(string text)=0;
 	virtual void write(float f)=0;
 	virtual void read(float* f)=0;
-	virtual ~DefaultIO(){}
+	virtual ~DefaultIO()= default;
 	void readFiles(string fileName){
         ofstream fileOut(fileName);
-        string bits;
+        string bits ="";
         // in mainTrain we finish with "done"
         while ((bits = read()) != "done"){
             fileOut << bits << endl;
@@ -51,9 +51,7 @@ public:
     const string description;
 	Command(DefaultIO* dio, const string desc):dio(dio), description(desc){}
 	virtual void execute(struct Ts* ts)=0;
-	virtual ~Command(){
-        delete dio;
-    }
+	virtual ~Command()= default;
 };
 
 class Upload : public Command {
@@ -108,7 +106,7 @@ public:
         for(const AnomalyReport& report : ts->reports) {
             dio->write((float) report.timeStep);
             dio->write("\t");
-            dio->write(report.description);
+            dio->write(report.description + "\n");
         }
         dio->write("Done.\n");
     }

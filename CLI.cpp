@@ -13,7 +13,7 @@ CLI::CLI(DefaultIO* dio) {
 void CLI::start(){
     Ts ts;
     int userInput = 0;
-    while (userInput != 6) {
+    while (userInput != 5) {
         this->dio->write("Welcome to the Anomaly Detection Server.\n");
         this->dio->write("Please choose an option:\n");
         string toPrint = commands[0]->description;
