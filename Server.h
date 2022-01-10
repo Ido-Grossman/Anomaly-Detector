@@ -46,7 +46,9 @@ public:
 class AnomalyDetectionHandler:public ClientHandler{
 	public:
     virtual void handle(int clientID){
-
+        SocketIO socketio(clientID);
+        CLI cli(&socketio);
+        cli.start();
     }
 };
 
