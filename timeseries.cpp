@@ -1,3 +1,4 @@
+// ID: 324603422 (Santiago Szterenberg) && 208985424 (Ido Grossman)
 #include "timeseries.h"
 
 // constructor for TimeSeries
