@@ -25,7 +25,7 @@ public:
         ofstream fileOut(fileName);
         string bits ="";
         // in mainTrain we finish with "done"
-        while ((bits = read()) != "done"){
+        while ((bits = read()) != "done\n"){
             fileOut << bits << endl;
         }
         fileOut.close();
@@ -177,7 +177,7 @@ public:
         mergeReports(ts, originReports);
         string line = "";
         // Reads the user file and pushes all his reports into a vector.
-        while ((line = dio->read()) != "done") {
+        while ((line = dio->read()) != "done\n") {
             ulong where = line.find(',');
             Anomaly anomaly;
             anomaly.startTime = stoi(line.substr(0, where));
