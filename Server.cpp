@@ -1,6 +1,7 @@
 
 #include "Server.h"
 
+// this function reads from the client's buffer
 string SocketIO::read() {
     string word = "";
     char letter = 0;
@@ -11,6 +12,7 @@ string SocketIO::read() {
     return word;
 }
 
+// this function writes through stream
 void SocketIO::write(float f) {
     ostringstream stream;
     stream << f;
@@ -26,6 +28,7 @@ void SocketIO::read(float *f) {
 
 }
 
+// this function initialize the tcp socket
 Server::Server(int port)throw (const char*) {
     isStopped = false;
     fileDesc = socket(AF_INET, SOCK_STREAM, 0);
@@ -42,10 +45,12 @@ Server::Server(int port)throw (const char*) {
         throw "listen failure";
 }
 
+// when we get an alarm we write to the console
 void handler(int sigNum){
     cout<<"sidH"<<endl;
 }
 
+// this function starts the server and accepts the clients one by one
 void Server::start(ClientHandler& ch)throw(const char*) {
     t = new thread([&ch, this]() {
         signal(SIGALRM, handler);
@@ -54,10 +59,8 @@ void Server::start(ClientHandler& ch)throw(const char*) {
             alarm(1);
             int acceptClient = accept(fileDesc, (struct sockaddr*)&client, &cSize);
             if(acceptClient > 0){
-                //new thread([&aClient,this,&ch](){
                 ch.handle(acceptClient);
                 close(acceptClient);
-                //});
             }
             alarm(0);
 
